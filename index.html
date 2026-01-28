@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rodízio Retro</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -43,34 +49,35 @@
     </script>
     <style>
         /* Consolidating Custom CSS from all files to keep layout exact */
-        
+
         .checkered-border {
-            background-image: 
-                linear-gradient(45deg, #e63946 25%, transparent 25%), 
-                linear-gradient(-45deg, #e63946 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #e63946 75%), 
+            background-image:
+                linear-gradient(45deg, #e63946 25%, transparent 25%),
+                linear-gradient(-45deg, #e63946 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e63946 75%),
                 linear-gradient(-45deg, transparent 75%, #e63946 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             background-color: #ffffff;
         }
-        
+
         .checkered-pattern {
-            background-image: 
-                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+            background-image:
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%),
                 linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
-            background-size: 40px 40px; /* Varied in source, sticking to 40px */
+            background-size: 40px 40px;
+            /* Varied in source, sticking to 40px */
             background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
             background-color: #ffffff;
         }
 
         .checkered-footer {
-            background-image: 
-                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+            background-image:
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%),
                 linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
@@ -78,25 +85,25 @@
         }
 
         .checkered-banner {
-            background-image: 
-                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+            background-image:
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%),
                 linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
             background-size: 20px 20px;
             background-color: #ffffff;
         }
 
         .checker-pattern {
-             background-image: linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
-                              linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
-                              linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
-                              linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
+            background-image: linear-gradient(45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%),
+                linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
             background-size: 40px 40px;
             background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
             opacity: 0.05;
         }
-        
+
         .pop-art-bg {
             background-color: #fdf8e6;
             background-image: radial-gradient(#ffca28 1px, transparent 1px);
@@ -109,10 +116,11 @@
         }
 
         .hard-shadow {
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.9);
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.9);
         }
+
         .hard-shadow:active {
-            box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.9);
+            box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.9);
             transform: translate(3px, 3px);
         }
 
@@ -129,6 +137,7 @@
             box-shadow: 4px 4px 0px #221010;
             transform: rotate(-5deg);
         }
+
         .timer-glow {
             text-shadow: 0 0 10px rgba(255, 219, 88, 0.5);
         }
@@ -156,22 +165,24 @@
         }
 
         .pop-art-shadow {
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
         }
+
         .sticker-shadow {
-            box-shadow: 3px 3px 0px 0px rgba(0,0,0,1);
+            box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 1);
         }
+
         .cartoon-shadow {
-            filter: drop-shadow(0 10px 0px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 10px 0px rgba(0, 0, 0, 0.1));
         }
-        
+
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react/": "https://esm.sh/react@^19.2.4/",
@@ -180,10 +191,11 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
+
 <body>
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="./src/index.tsx"></script>
 </body>
+
 </html>
