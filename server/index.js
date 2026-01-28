@@ -13,11 +13,11 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
 
-// Rotas da API
-app.post('/api/create-payment', createPayment);
-app.post('/api/webhook', receiveWebhook);
-app.get('/api/registrations', getRegistrations);
-app.delete('/api/registrations/:id', deleteRegistration);
+// Rotas da API (o prefixo /api já é tratado pelo Vercel Rewrites)
+app.post('/create-payment', createPayment);
+app.post('/webhook', receiveWebhook);
+app.get('/registrations', getRegistrations);
+app.delete('/registrations/:id', deleteRegistration);
 
 // Servir arquivos estáticos do Frontend (após o build)
 app.use(express.static(path.join(__dirname, '../dist')));
