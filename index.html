@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rodízio Retro</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d", // Unified primary red
+                        "primary-yellow": "#f4d125",
+                        "secondary-red": "#e63946",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#221f10",
+                        "mustard": "#eab308", // And #ffdb58, #ffdb00 variations mapped close
+                        "retro-green": "#15803d",
+                        "accent-yellow": "#ffca28",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Space Grotesk", "Inter", "sans-serif"],
+                        "retro": ["'Press Start 2P'", "cursive"],
+                        "pixel": ["VT323", "monospace"],
+                        "poppins": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Consolidating Custom CSS from all files to keep layout exact */
+        
+        .checkered-border {
+            background-image: 
+                linear-gradient(45deg, #e63946 25%, transparent 25%), 
+                linear-gradient(-45deg, #e63946 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #e63946 75%), 
+                linear-gradient(-45deg, transparent 75%, #e63946 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #ffffff;
+        }
+        
+        .checkered-pattern {
+            background-image: 
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+                linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
+            background-size: 40px 40px; /* Varied in source, sticking to 40px */
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            background-color: #ffffff;
+        }
+
+        .checkered-footer {
+            background-image: 
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+                linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.1;
+        }
+
+        .checkered-banner {
+            background-image: 
+                linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+                linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
+            background-size: 20px 20px;
+            background-color: #ffffff;
+        }
+
+        .checker-pattern {
+             background-image: linear-gradient(45deg, #f20d0d 25%, transparent 25%), 
+                              linear-gradient(-45deg, #f20d0d 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #f20d0d 75%), 
+                              linear-gradient(-45deg, transparent 75%, #f20d0d 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            opacity: 0.05;
+        }
+        
+        .pop-art-bg {
+            background-color: #fdf8e6;
+            background-image: radial-gradient(#ffca28 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .sticker-card {
+            border: 3px solid #181711;
+            box-shadow: 8px 8px 0px #181711;
+        }
+
+        .hard-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.9);
+        }
+        .hard-shadow:active {
+            box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.9);
+            transform: translate(3px, 3px);
+        }
+
+        .bubbly-text {
+            text-shadow: 4px 4px 0px #221010;
+            -webkit-text-stroke: 1px #221010;
+        }
+
+        .floating-burger {
+            filter: blur(1px);
+        }
+
+        .sticker-badge {
+            box-shadow: 4px 4px 0px #221010;
+            transform: rotate(-5deg);
+        }
+        .timer-glow {
+            text-shadow: 0 0 10px rgba(255, 219, 88, 0.5);
+        }
+
+        .distressed-stamp {
+            border: 8px solid #f20d0d;
+            color: #f20d0d;
+            padding: 1rem 3rem;
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transform: rotate(-15deg);
+            mask-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            -webkit-mask-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px #f20d0d;
+            text-shadow: none;
+            opacity: 0.9;
+        }
+
+        .diner-border {
+            border: 4px solid #f20d0d;
+            box-shadow: 4px 4px 0px 0px #000;
+        }
+
+        .pop-art-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+        }
+        .sticker-shadow {
+            box-shadow: 3px 3px 0px 0px rgba(0,0,0,1);
+        }
+        .cartoon-shadow {
+            filter: drop-shadow(0 10px 0px rgba(0,0,0,0.1));
+        }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
