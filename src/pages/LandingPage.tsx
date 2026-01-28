@@ -104,8 +104,8 @@ export const LandingPage: React.FC<{ onNavigateToAdmin?: () => void }> = ({ onNa
 
     return (
         <div className="bg-background-light dark:bg-background-dark font-display overflow-x-hidden min-h-screen relative">
-            <div className="fixed left-0 top-0 bottom-0 w-8 md:w-16 checkered-pattern opacity-20 z-0"></div>
-            <div className="fixed right-0 top-0 bottom-0 w-8 md:w-16 checkered-pattern opacity-20 z-0"></div>
+            <div className="fixed left-0 top-0 bottom-0 w-4 md:w-16 checkered-pattern opacity-20 z-0"></div>
+            <div className="fixed right-0 top-0 bottom-0 w-4 md:w-16 checkered-pattern opacity-20 z-0"></div>
             <div className="relative z-10 flex flex-col items-center">
                 <header className="w-full max-w-5xl px-6 py-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -142,18 +142,18 @@ export const LandingPage: React.FC<{ onNavigateToAdmin?: () => void }> = ({ onNa
                     <div className="absolute -right-24 bottom-10 w-48 h-48 opacity-40 -rotate-12 floating-burger hidden lg:block">
                         <div className="w-full h-full bg-cover bg-center rounded-xl" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBa7Aa0BQnPYFqBb4iTMauY1RdGczRg_ser05BABHlx1HzvZfEkE_cK2nZtphFugEh-6kM8iYRQQaDIlXsA_18X3rgUKhzg37Y2MojM3istVdsol97zg3dvxLvvOTu-8SvNptIPmLKQ_f6PslZ4XJ6H-DqypcV3R5Is9gT495gXhQLZdwOFY8fRWK4TRVCqLpHWIaxVjFYQl2g-XuexVJCuxIPngErlbUqKibEtQwq7aje-Dtib7HRjRliBFW8JbZ9c4XoGF36LWns")' }}></div>
                     </div>
-                    <div className="text-center mb-12">
-                        <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block">14 de Março 2026</span>
-                        <h1 className="text-primary text-6xl md:text-8xl font-black leading-none bubbly-text mb-4 uppercase italic">
+                    <div className="text-center mb-8 md:mb-12">
+                        <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4 inline-block">14 de Março 2026</span>
+                        <h1 className="text-primary text-4xl sm:text-6xl md:text-8xl font-black leading-tight md:leading-none bubbly-text mb-4 uppercase italic break-words">
                             Rodízio de <br /> Hambúrguer
                         </h1>
-                        <p className="text-[#181111] dark:text-white/80 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+                        <p className="text-[#181111] dark:text-white/80 text-base md:text-xl font-medium max-w-2xl mx-auto px-4">
                             A experiência definitiva all-you-can-eat com estética Pop Art.
                             Prepare o seu apetite para os melhores blends da cidade!
                         </p>
                     </div>
                     <div className="w-full max-w-2xl bg-white dark:bg-[#2d1818] rounded-[2rem] shadow-2xl p-8 md:p-12 border-4 border-primary/10 relative">
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-8 py-2 rounded-full font-bold shadow-md whitespace-nowrap">
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 md:px-8 py-2 rounded-full font-bold shadow-md whitespace-nowrap text-[10px] md:text-sm">
                             GARANTA SUA VAGA AGORA
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
@@ -253,27 +253,27 @@ export const LandingPage: React.FC<{ onNavigateToAdmin?: () => void }> = ({ onNa
                                 Adicionar Mais Uma Pessoa
                             </button>
 
-                            <div className="flex items-center justify-center gap-6 py-6 border-t border-b border-gray-100 dark:border-gray-800">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 py-6 border-t border-b border-gray-100 dark:border-gray-800">
                                 <div className="text-center">
                                     <p className="text-xs text-gray-400 font-bold uppercase">Pessoas</p>
                                     <p className="text-2xl font-black text-[#181111] dark:text-white">{attendees.length}</p>
                                 </div>
-                                <div className="h-10 w-[1px] bg-gray-200 dark:bg-gray-700"></div>
+                                <div className="hidden md:block h-10 w-[1px] bg-gray-200 dark:bg-gray-700 mx-auto"></div>
                                 <div className="text-center">
                                     <p className="text-xs text-gray-400 font-bold uppercase">Valor por Pessoa</p>
                                     <p className="text-2xl font-black text-primary">R$ {PRICE_PER_PERSON.toFixed(2)}</p>
                                 </div>
-                                <div className="h-10 w-[1px] bg-gray-200 dark:bg-gray-700"></div>
-                                <div className="text-center">
+                                <div className="hidden md:block h-10 w-[1px] bg-gray-200 dark:bg-gray-700 mx-auto"></div>
+                                <div className="text-center sm:col-span-2 md:col-span-1">
                                     <p className="text-xs text-gray-400 font-bold uppercase">Total a Pagar</p>
-                                    <p className="text-3xl font-black text-primary italic">R$ {totalAmount.toFixed(2)}</p>
+                                    <p className="text-2xl md:text-3xl font-black text-primary italic">R$ {totalAmount.toFixed(2)}</p>
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-mustard hover:bg-[#ffcf30] text-[#181111] py-6 rounded-full text-xl font-black uppercase tracking-tight shadow-[0_10px_0_#d4ac1d] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-mustard hover:bg-[#ffcf30] text-[#181111] py-5 md:py-6 rounded-full text-lg md:text-xl font-black uppercase tracking-tight shadow-[0_10px_0_#d4ac1d] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Processando...' : `Pagar R$ ${totalAmount.toFixed(2)}`}
                                 <span className="material-symbols-outlined font-black">arrow_forward</span>
