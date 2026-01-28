@@ -1,6 +1,6 @@
 import { Preference, Payment } from 'mercadopago';
 import client from '../config/mercadopago.js';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 // Configuração do Firebase
@@ -13,7 +13,8 @@ const firebaseConfig = {
     appId: "1:783571658204:web:c3d0c264070dfdcc2d5b19"
 };
 
-const app = initializeApp(firebaseConfig);
+// Inicializar Firebase apenas se ainda não foi inicializado
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 
 export const createPayment = async (req, res) => {
