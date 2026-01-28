@@ -16,6 +16,7 @@ const firebaseConfig = {
 // Inicializar Firebase apenas se ainda não foi inicializado
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
+const db = getFirestore(app);
 
 export const createPayment = async (req, res) => {
     try {
@@ -187,3 +188,4 @@ export const deleteRegistration = async (req, res) => {
         });
     }
 };
+
