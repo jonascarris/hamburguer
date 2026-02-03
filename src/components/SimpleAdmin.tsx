@@ -117,6 +117,21 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         }
     };
 
+    const handleSyncStatus = async (id: string) => {
+        setLoading(true);
+        try {
+            console.log('Sincronizando status via Mercado Pago:', id);
+            const response = await axios.post(`/api/sync/${id}`);
+            alert(`Sincronização concluída! Status atual: ${response.data.status}`);
+            loadRegistrations();
+        } catch (error: any) {
+            console.error('Erro ao sincronizar status:', error);
+            alert(`Erro ao sincronizar: ${error.response?.data?.error || error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const printAll = () => {
         if (registrations.length === 0) {
             alert('Nenhuma inscrição para imprimir');
@@ -398,15 +413,26 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                                         Estornar
                                                     </button>
                                                 )}
-                                                {reg.status === 'pending' && (
+
+                                                {/* Botão de Sincronizar para qualquer um que tenha ID de pagamento */}
+                                                {reg.paymentId && (
                                                     <button
-                                                        onClick={() => deleteRegistration(reg.id)}
-                                                        className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs font-medium transition-all"
+                                                        onClick={() => handleSyncStatus(reg.id)}
+                                                        className="p-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
+                                                        title="Sincronizar status com Mercado Pago"
                                                     >
-                                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
-                                                        Excluir
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>sync</span>
                                                     </button>
                                                 )}
+
+                                                <button
+                                                    onClick={() => deleteRegistration(reg.id)}
+                                                    className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs font-medium transition-all"
+                                                    title="Excluir da lista"
+                                                >
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                                                    Excluir
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

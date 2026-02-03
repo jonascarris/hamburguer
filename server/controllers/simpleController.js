@@ -244,3 +244,58 @@ export const deleteRegistration = async (req, res) => {
         });
     }
 };
+
+export const syncRegistrationStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('🔄 Sincronizando inscrição com Mercado Pago:', id);
+
+        const docRef = doc(db, 'registrations', id);
+        const snapshot = await getDocs(query(collection(db, 'registrations')));
+        const targetDoc = snapshot.docs.find(d => d.id === id);
+
+        if (!targetDoc) {
+            return res.status(404).json({ error: 'Inscrição não encontrada' });
+        }
+
+        const registration = targetDoc.data();
+        const paymentId = registration.paymentId;
+        const groupId = registration.groupId;
+
+        if (!paymentId) {
+            return res.status(400).json({ error: 'Inscrição não possui ID de pagamento para sincronizar' });
+        }
+
+        const payment = new Payment(client);
+        const paymentData = await payment.get({ id: paymentId });
+        const status = paymentData.status;
+
+        // Map status
+        let finalStatus = 'pending';
+        if (status === 'approved') finalStatus = 'approved';
+        if (status === 'refunded') finalStatus = 'refunded';
+        if (status === 'cancelled' || status === 'rejected') finalStatus = 'cancelled';
+
+        // Atualiza todas do grupo para manter consistência
+        const updates = [];
+        snapshot.forEach((docSnapshot) => {
+            const data = docSnapshot.data();
+            if (data.groupId === groupId) {
+                updates.push(
+                    updateDoc(doc(db, 'registrations', docSnapshot.id), {
+                        status: finalStatus,
+                        updatedAt: serverTimestamp()
+                    })
+                );
+            }
+        });
+
+        await Promise.all(updates);
+        console.log('✅ Sincronização concluída. Novo status:', finalStatus);
+
+        res.json({ success: true, status: finalStatus });
+    } catch (error) {
+        console.error('❌ Erro ao sincronizar:', error);
+        res.status(500).json({ error: 'Erro ao sincronizar com MP', details: error.message });
+    }
+};
