@@ -59,6 +59,18 @@ export const LandingPage: React.FC<{ onNavigateToAdmin?: () => void }> = ({ onNa
         }
     };
 
+    const calculateAge = (birthDate: string) => {
+        if (!birthDate) return 0;
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -68,6 +80,13 @@ export const LandingPage: React.FC<{ onNavigateToAdmin?: () => void }> = ({ onNa
                 alert('Por favor, preencha todos os campos obrigatórios de todas as pessoas');
                 return;
             }
+
+            const age = calculateAge(attendee.birthDate);
+            if (age < 13 || age > 36) {
+                alert(`Inscrição não permitida para ${attendee.name}. A idade deve estar entre 13 e 36 anos. (Idade calculada: ${age} anos)`);
+                return;
+            }
+
             if (attendee.hasCell === 'sim' && !attendee.cellName) {
                 alert(`Por favor, informe o nome da célula para ${attendee.name}`);
                 return;

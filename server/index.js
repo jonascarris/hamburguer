@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createPayment, receiveWebhook, getRegistrations, deleteRegistration } from './controllers/simpleController.js';
+import { createPayment, receiveWebhook, getRegistrations, deleteRegistration, refundPayment } from './controllers/simpleController.js';
 
 // Carregar variáveis de ambiente
 dotenv.config({ path: '../.env.local' });
@@ -17,6 +17,7 @@ app.post('/api/create-payment', createPayment);
 app.post('/api/webhook', receiveWebhook);
 app.get('/api/registrations', getRegistrations);
 app.delete('/api/registrations/:id', deleteRegistration);
+app.post('/api/refund/:id', refundPayment);
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     app.listen(PORT, () => {

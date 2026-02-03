@@ -103,8 +103,8 @@ export const receiveWebhook = async (req, res) => {
                 console.log('💳 Payment Status:', paymentData.status);
                 console.log('🔗 External Reference:', paymentData.external_reference);
 
-                // Atualiza o status no Firebase
-                if (paymentData.external_reference && paymentData.status === 'approved') {
+                if (paymentData.external_reference) {
+                    const status = paymentData.status; // approved, refunded, cancelled, etc.
                     const q = query(collection(db, 'registrations'));
                     const snapshot = await getDocs(q);
 
@@ -113,18 +113,26 @@ export const receiveWebhook = async (req, res) => {
                         const regData = docSnapshot.data();
                         if (regData.groupId === paymentData.external_reference) {
                             const docRef = doc(db, 'registrations', docSnapshot.id);
+
+                            // Map MP status to our system status
+                            let finalStatus = 'pending';
+                            if (status === 'approved') finalStatus = 'approved';
+                            if (status === 'refunded') finalStatus = 'refunded';
+                            if (status === 'cancelled' || status === 'rejected') finalStatus = 'cancelled';
+
                             updates.push(
                                 updateDoc(docRef, {
-                                    status: 'approved',
+                                    status: finalStatus,
                                     paymentId: data.id,
-                                    approvedAt: serverTimestamp()
+                                    updatedAt: serverTimestamp(),
+                                    ...(finalStatus === 'approved' ? { approvedAt: serverTimestamp() } : {})
                                 })
                             );
                         }
                     });
 
                     await Promise.all(updates);
-                    console.log('✅ Status atualizado para', updates.length, 'inscrições');
+                    console.log('✅ Status atualizado para', updates.length, 'inscrições como', status);
                 }
             }
         }
@@ -133,6 +141,69 @@ export const receiveWebhook = async (req, res) => {
     } catch (error) {
         console.error('❌ Erro no webhook:', error);
         res.sendStatus(500);
+    }
+};
+
+export const refundPayment = async (req, res) => {
+    try {
+        const { id } = req.params; // ID da inscrição no Firebase
+        console.log('💰 Iniciando estorno para inscrição:', id);
+
+        // 1. Buscar a inscrição para pegar o paymentId
+        const docRef = doc(db, 'registrations', id);
+        const snapshot = await getDocs(query(collection(db, 'registrations')));
+
+        let registration = null;
+        let registrationId = id;
+
+        // Melhora a busca: o id que vem do parâmetro é o doc.id
+        // Mas vamos buscar todos do mesmo grupo para estornar o pagamento completo se necessário
+        // (Mercado Pago costuma estornar o pagamento inteiro se for uma única transação)
+
+        const targetDoc = snapshot.docs.find(d => d.id === id);
+        if (!targetDoc) {
+            return res.status(404).json({ error: 'Inscrição não encontrada' });
+        }
+
+        registration = targetDoc.data();
+        const paymentId = registration.paymentId;
+        const groupId = registration.groupId;
+
+        if (!paymentId) {
+            return res.status(400).json({ error: 'Inscrição não possui ID de pagamento (ainda pendente)' });
+        }
+
+        // 2. Chamar API do Mercado Pago para estorno
+        console.log('🔄 Chamando API de Reembolso do Mercado Pago para ID:', paymentId);
+        const payment = new Payment(client);
+
+        // O MP permite reembolso total ou parcial. Aqui faremos o total do pagamento associado.
+        await payment.refund({ payment_id: paymentId });
+
+        // 3. Atualizar todas as inscrições do mesmo grupo como refunded
+        const updates = [];
+        snapshot.forEach((docSnapshot) => {
+            const data = docSnapshot.data();
+            if (data.groupId === groupId) {
+                updates.push(
+                    updateDoc(doc(db, 'registrations', docSnapshot.id), {
+                        status: 'refunded',
+                        refundedAt: serverTimestamp()
+                    })
+                );
+            }
+        });
+
+        await Promise.all(updates);
+        console.log('✅ Estorno concluído com sucesso');
+
+        res.json({ success: true, message: 'Estorno realizado com sucesso' });
+    } catch (error) {
+        console.error('❌ Erro ao realizar estorno:', error);
+        res.status(500).json({
+            error: 'Erro ao processar estorno no Mercado Pago',
+            details: error.message
+        });
     }
 };
 

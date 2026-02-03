@@ -18,7 +18,29 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
     const [registrations, setRegistrations] = useState<Registration[]>([]);
     const [loading, setLoading] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showRefundModal, setShowRefundModal] = useState(false);
     const [registrationToDelete, setRegistrationToDelete] = useState<string | null>(null);
+    const [registrationToRefund, setRegistrationToRefund] = useState<string | null>(null);
+
+    const calculateAge = (birthDate: string) => {
+        if (!birthDate) return 0;
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    const formatDateBR = (dateStr: string) => {
+        if (!dateStr) return '';
+        // dateStr is usually yyyy-mm-dd
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    };
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,9 +87,33 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
             loadRegistrations();
         } catch (error: any) {
             console.error('Erro ao excluir inscrição:', error);
-            console.error('Detalhes:', error.response?.data);
             alert(`Erro ao excluir inscrição: ${error.response?.data?.error || error.message}`);
             setShowDeleteModal(false);
+        }
+    };
+
+    const handleRefund = async (id: string) => {
+        setRegistrationToRefund(id);
+        setShowRefundModal(true);
+    };
+
+    const confirmRefund = async () => {
+        if (!registrationToRefund) return;
+
+        setLoading(true);
+        try {
+            console.log('Estornando inscrição:', registrationToRefund);
+            await axios.post(`/api/refund/${registrationToRefund}`);
+            setShowRefundModal(false);
+            setRegistrationToRefund(null);
+            alert('💳 Estorno realizado com sucesso no Mercado Pago!');
+            loadRegistrations();
+        } catch (error: any) {
+            console.error('Erro ao estornar inscrição:', error);
+            alert(`Erro ao estornar: ${error.response?.data?.error || error.message}`);
+            setShowRefundModal(false);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -318,7 +364,9 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                         <tr key={reg.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="font-medium text-gray-900">{reg.name}</div>
-                                                <div className="text-sm text-gray-500">{reg.birthDate}</div>
+                                                <div className="text-sm text-gray-500">
+                                                    {formatDateBR(reg.birthDate)} ({calculateAge(reg.birthDate)} anos)
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                                 {reg.whatsapp}
@@ -329,15 +377,27 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${reg.status === 'approved'
                                                     ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                    : reg.status === 'refunded'
+                                                        ? 'bg-purple-100 text-purple-800'
+                                                        : 'bg-yellow-100 text-yellow-800'
                                                     }`}>
-                                                    {reg.status === 'approved' ? '✓ Pago' : '⏳ Pendente'}
+                                                    {reg.status === 'approved' ? '✓ Pago' : reg.status === 'refunded' ? '↺ Estornado' : '⏳ Pendente'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 R$ 30,00
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                                                {reg.status === 'approved' && (
+                                                    <button
+                                                        onClick={() => handleRefund(reg.id)}
+                                                        className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs font-medium transition-all"
+                                                        title="Realizar estorno no Mercado Pago"
+                                                    >
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>payments</span>
+                                                        Estornar
+                                                    </button>
+                                                )}
                                                 {reg.status === 'pending' && (
                                                     <button
                                                         onClick={() => deleteRegistration(reg.id)}
@@ -385,6 +445,40 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-all"
                             >
                                 Excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {/* Modal de Confirmação de Estorno */}
+            {showRefundModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <span className="material-symbols-outlined text-purple-600 text-2xl">payments</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800">Confirmar Estorno</h3>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            Deseja realizar o estorno desta inscrição? O dinheiro será devolvido ao cliente através do Mercado Pago e o status será atualizado.
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => {
+                                    setShowRefundModal(false);
+                                    setRegistrationToRefund(null);
+                                }}
+                                className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-medium transition-all"
+                                disabled={loading}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmRefund}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-all flex items-center gap-2"
+                                disabled={loading}
+                            >
+                                {loading ? 'Processando...' : 'Confirmar Estorno'}
                             </button>
                         </div>
                     </div>
