@@ -250,7 +250,6 @@ export const syncRegistrationStatus = async (req, res) => {
         const { id } = req.params;
         console.log('🔄 Sincronizando inscrição com Mercado Pago:', id);
 
-        const docRef = doc(db, 'registrations', id);
         const snapshot = await getDocs(query(collection(db, 'registrations')));
         const targetDoc = snapshot.docs.find(d => d.id === id);
 
@@ -259,16 +258,35 @@ export const syncRegistrationStatus = async (req, res) => {
         }
 
         const registration = targetDoc.data();
-        const paymentId = registration.paymentId;
+        let paymentId = registration.paymentId;
         const groupId = registration.groupId;
 
-        if (!paymentId) {
-            return res.status(400).json({ error: 'Inscrição não possui ID de pagamento para sincronizar' });
-        }
-
         const payment = new Payment(client);
-        const paymentData = await payment.get({ id: paymentId });
-        const status = paymentData.status;
+        let status = null;
+
+        // Se não tem paymentId, vamos tentar buscar por external_reference (groupId)
+        if (!paymentId) {
+            console.log('🔍 Buscando pagamento por external_reference:', groupId);
+            const searchResult = await payment.search({
+                options: {
+                    external_reference: groupId
+                }
+            });
+
+            if (searchResult.results && searchResult.results.length > 0) {
+                // Pega o pagamento mais recente aprovado ou o último se nenhum for aprovado
+                const bestPayment = searchResult.results.find(p => p.status === 'approved') || searchResult.results[0];
+                paymentId = bestPayment.id;
+                status = bestPayment.status;
+                console.log('✅ Pagamento encontrado via busca:', paymentId, status);
+            } else {
+                return res.status(404).json({ error: 'Nenhum pagamento encontrado no Mercado Pago para esta inscrição.' });
+            }
+        } else {
+            // Se já tem paymentId, só pega o status atual dele
+            const paymentData = await payment.get({ id: paymentId });
+            status = paymentData.status;
+        }
 
         // Map status
         let finalStatus = 'pending';
@@ -284,7 +302,9 @@ export const syncRegistrationStatus = async (req, res) => {
                 updates.push(
                     updateDoc(doc(db, 'registrations', docSnapshot.id), {
                         status: finalStatus,
-                        updatedAt: serverTimestamp()
+                        paymentId: paymentId, // Salva o ID caso não tivesse
+                        updatedAt: serverTimestamp(),
+                        ...(finalStatus === 'approved' ? { approvedAt: serverTimestamp() } : {})
                     })
                 );
             }

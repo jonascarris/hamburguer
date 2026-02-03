@@ -452,16 +452,14 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                                     </button>
                                                 )}
 
-                                                {/* Botão de Sincronizar (Mercado Pago) */}
-                                                {reg.paymentId && (
-                                                    <button
-                                                        onClick={() => handleSyncStatus(reg.id)}
-                                                        className="p-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
-                                                        title="Sincronizar status com Mercado Pago"
-                                                    >
-                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>sync</span>
-                                                    </button>
-                                                )}
+                                                {/* Botão de Sincronizar (Mercado Pago) - Disponível para todos agora */}
+                                                <button
+                                                    onClick={() => handleSyncStatus(reg.id)}
+                                                    className="p-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
+                                                    title="Sincronizar status com Mercado Pago"
+                                                >
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>sync</span>
+                                                </button>
 
                                                 {/* Botão de Exclusão */}
                                                 <button
