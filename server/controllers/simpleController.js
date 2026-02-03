@@ -299,3 +299,25 @@ export const syncRegistrationStatus = async (req, res) => {
         res.status(500).json({ error: 'Erro ao sincronizar com MP', details: error.message });
     }
 };
+
+export const updateStatusManual = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        console.log(`📝 Atualizando status manualmente para ${id}: ${status}`);
+
+        const docRef = doc(db, 'registrations', id);
+        await updateDoc(docRef, {
+            status: status, // approved, pending, etc.
+            updatedAt: serverTimestamp(),
+            manualUpdate: true,
+            approvedAt: status === 'approved' ? serverTimestamp() : null
+        });
+
+        console.log('✅ Status atualizado manualmente');
+        res.json({ success: true, message: 'Status atualizado com sucesso' });
+    } catch (error) {
+        console.error('❌ Erro na atualização manual:', error);
+        res.status(500).json({ error: 'Erro ao atualizar status', details: error.message });
+    }
+};

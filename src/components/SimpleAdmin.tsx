@@ -132,6 +132,21 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         }
     };
 
+    const handleManualStatusChange = async (id: string, newStatus: string) => {
+        setLoading(true);
+        try {
+            console.log(`Alterando status manualmente: ${id} para ${newStatus}`);
+            await axios.patch(`/api/status/${id}`, { status: newStatus });
+            alert(`✅ Status atualizado para ${newStatus === 'approved' ? 'PAGO' : 'PENDENTE'}`);
+            loadRegistrations();
+        } catch (error: any) {
+            console.error('Erro ao alterar status:', error);
+            alert(`Erro: ${error.response?.data?.error || error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const printAll = () => {
         if (registrations.length === 0) {
             alert('Nenhuma inscrição para imprimir');
@@ -403,6 +418,7 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                                 R$ 30,00
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                                                {/* Botão de Estorno (Mercado Pago) */}
                                                 {reg.status === 'approved' && (
                                                     <button
                                                         onClick={() => handleRefund(reg.id)}
@@ -414,24 +430,46 @@ const SimpleAdmin: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                                                     </button>
                                                 )}
 
-                                                {/* Botão de Sincronizar para qualquer um que tenha ID de pagamento */}
+                                                {/* Confirmação Manual (Check) - Se estiver pendente ou estornado */}
+                                                {reg.status !== 'approved' && (
+                                                    <button
+                                                        onClick={() => handleManualStatusChange(reg.id, 'approved')}
+                                                        className="p-1 bg-green-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all"
+                                                        title="Confirmar Pagamento MANUAL (Dinheiro/Pix)"
+                                                    >
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>check_circle</span>
+                                                    </button>
+                                                )}
+
+                                                {/* Reverter para Pendente (Undo) - Se estiver aprovado */}
+                                                {reg.status === 'approved' && (
+                                                    <button
+                                                        onClick={() => handleManualStatusChange(reg.id, 'pending')}
+                                                        className="p-1 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition-all"
+                                                        title="Marcar como NÃO PAGO (Pendente)"
+                                                    >
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>undo</span>
+                                                    </button>
+                                                )}
+
+                                                {/* Botão de Sincronizar (Mercado Pago) */}
                                                 {reg.paymentId && (
                                                     <button
                                                         onClick={() => handleSyncStatus(reg.id)}
                                                         className="p-1 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
                                                         title="Sincronizar status com Mercado Pago"
                                                     >
-                                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>sync</span>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>sync</span>
                                                     </button>
                                                 )}
 
+                                                {/* Botão de Exclusão */}
                                                 <button
                                                     onClick={() => deleteRegistration(reg.id)}
-                                                    className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs font-medium transition-all"
+                                                    className="p-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all"
                                                     title="Excluir da lista"
                                                 >
-                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
-                                                    Excluir
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
                                                 </button>
                                             </td>
                                         </tr>
